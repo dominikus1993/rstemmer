@@ -1,6 +1,8 @@
-fn trim_end_apostrophe(str: String) -> Option<String> {
-    let res = str.strip_suffix('\'')?;
-    Some(res.to_string())
+fn trim_end_apostrophe(str: String) -> String {
+    match str.strip_suffix('\'') {
+        Some(word) => word.to_string(),
+        None => str
+    }
 }
 
 #[cfg(test)]
@@ -13,8 +15,7 @@ mod tests {
         let array = vec![("te'st", "te'st"), ("test'", "test")];
         for (word, expected) in array {
             let subject = trim_end_apostrophe(word.to_string());
-            assert!(subject.is_some());
-            assert_eq!(expected.to_string(), subject.unwrap());
+            assert_eq!(expected.to_string(), subject);
         }
     }
 }
