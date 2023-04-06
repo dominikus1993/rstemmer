@@ -1,6 +1,8 @@
 use std::ops::Add;
 
-use crate::strings::replace_suffix;
+use regex::Regex;
+
+use crate::strings::{ replace_suffix, remove_suffix };
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 enum ReplaceResult {
@@ -15,17 +17,22 @@ impl ReplaceResult {
             Self::Next(str) => f(str.clone())
         }
     }
+
+    fn value(&self) -> String {
+        match self {
+            Self::Found(str) =>str.clone(), 
+            Self::Next(str) => str.clone()
+        }
+    }
 }
-// }
-// let replaceIedAndIes(word: string) =
-// if word.EndsWith("ied") || word.EndsWith("ies") then
-//     let result = if word.Length > 4 then
-//                     word |> replaceSuffix "ied" "i" |> replaceSuffix "ies" "i"
-//                  else
-//                     word |> replaceSuffix "ied" "ie" |> replaceSuffix "ies" "ie"
-//     Found(result)
-// else
-//     Next(word)
+
+fn remove_s(word: String) -> ReplaceResult {
+    let re = Regex::new(r"([aeiou]).+s$").unwrap();
+    if re.is_match(&word) {
+        return ReplaceResult::Found(remove_suffix(word, "s"));
+    }
+    ReplaceResult::Next(word)
+}
 
 fn replace_ied_and_ies(word: String) -> ReplaceResult {
     if !(word.ends_with("ied") || word.ends_with("ies")) {
@@ -56,6 +63,11 @@ fn leave_us_and_ss(word: String) -> ReplaceResult {
     return ReplaceResult::Next(word);
 }
 
+pub fn apply(word: String) -> String {
+    let result = replace_sses(word).bind(replace_ied_and_ies).bind(leave_us_and_ss).bind(remove_s);
+    result.value()
+}
+
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
@@ -84,6 +96,24 @@ mod tests {
         let array = vec![("tied", ReplaceResult::Found("tie".to_string())), ("cries", ReplaceResult::Found("cri".to_string())), ("ties", ReplaceResult::Found("tie".to_string())), ("test", ReplaceResult::Next("test".to_string()))];
         for (word, expected) in array {
             let subject = replace_ied_and_ies(word.to_string());
+            assert_eq!(expected, subject);
+        }
+    }
+
+    #[test]
+    fn test_remove_s() {
+        let array = vec![("gas", ReplaceResult::Next("gas".to_string())), ("kiwis", ReplaceResult::Found("kiwi".to_string())), ("gaps", ReplaceResult::Found("gap".to_string())), ("test", ReplaceResult::Next("test".to_string()))];
+        for (word, expected) in array {
+            let subject = remove_s(word.to_string());
+            assert_eq!(expected, subject);
+        }
+    }
+
+    #[test]
+    fn test_apply() {
+        let array = vec![("actresses", "actress".to_string()), ("test", "test".to_string())];
+        for (word, expected) in array {
+            let subject = apply(word.to_string());
             assert_eq!(expected, subject);
         }
     }
