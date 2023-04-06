@@ -1,5 +1,7 @@
 use std::ops::Add;
 
+use crate::strings::replace_suffix;
+
 #[derive(PartialEq, Eq, Debug, Clone)]
 enum ReplaceResult {
     Found(String),
@@ -14,15 +16,30 @@ impl ReplaceResult {
         }
     }
 }
+// }
+// let replaceIedAndIes(word: string) =
+// if word.EndsWith("ied") || word.EndsWith("ies") then
+//     let result = if word.Length > 4 then
+//                     word |> replaceSuffix "ied" "i" |> replaceSuffix "ies" "i"
+//                  else
+//                     word |> replaceSuffix "ied" "ie" |> replaceSuffix "ies" "ie"
+//     Found(result)
+// else
+//     Next(word)
 
-fn replace_suffix(str: String, txt: &str, replacement: &str) -> String {
-    if str.ends_with(txt) {
-        let slice = &str[0..(str.len() - txt.len())];
-        let result = String::from(slice).add(replacement);
-        return result
+fn replace_ied_and_ies(word: String) -> ReplaceResult {
+    if !(word.ends_with("ied") || word.ends_with("ies")) {
+        return ReplaceResult::Next(word);
     }
-    str
-} 
+
+    let replacement = if word.len() > 4 {
+        "i"
+    } else {
+        "ie"
+    };
+    let res = replace_suffix(replace_suffix(word, "ied", replacement), "ies", replacement);
+    return ReplaceResult::Found(res);
+}
 
 fn replace_sses(str: String) -> ReplaceResult {
     if str.ends_with("sses") {
@@ -58,6 +75,15 @@ mod tests {
         let array = vec![("abyss", ReplaceResult::Found("abyss".to_string())), ("us", ReplaceResult::Found("us".to_string())), ("gap", ReplaceResult::Next("gap".to_string()))];
         for (word, expected) in array {
             let subject = leave_us_and_ss(word.to_string());
+            assert_eq!(expected, subject);
+        }
+    }
+
+    #[test]
+    fn test_replace_ied_and_ies() {
+        let array = vec![("tied", ReplaceResult::Found("tie".to_string())), ("ties", ReplaceResult::Found("tie".to_string())), ("test", ReplaceResult::Next("test".to_string()))];
+        for (word, expected) in array {
+            let subject = replace_ied_and_ies(word.to_string());
             assert_eq!(expected, subject);
         }
     }

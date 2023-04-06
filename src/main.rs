@@ -1,4 +1,5 @@
-mod  porter;
+mod porter;
+mod strings;
 
 fn main() {
     let slice = &"Hello, world!"[0..];
