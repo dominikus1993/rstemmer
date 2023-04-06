@@ -81,7 +81,7 @@ mod tests {
 
     #[test]
     fn test_replace_ied_and_ies() {
-        let array = vec![("tied", ReplaceResult::Found("tie".to_string())), ("ties", ReplaceResult::Found("tie".to_string())), ("test", ReplaceResult::Next("test".to_string()))];
+        let array = vec![("tied", ReplaceResult::Found("tie".to_string())), ("cries", ReplaceResult::Found("cri".to_string())), ("ties", ReplaceResult::Found("tie".to_string())), ("test", ReplaceResult::Next("test".to_string()))];
         for (word, expected) in array {
             let subject = replace_ied_and_ies(word.to_string());
             assert_eq!(expected, subject);
