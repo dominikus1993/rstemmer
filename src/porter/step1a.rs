@@ -111,7 +111,7 @@ mod tests {
 
     #[test]
     fn test_apply() {
-        let array = vec![("actresses", "actress".to_string()), ("test", "test".to_string())];
+        let array = vec![("actresses", "actress".to_string()), ("test", "test".to_string()), ("youth's", "Youth".to_string())];
         for (word, expected) in array {
             let subject = apply(word.to_string());
             assert_eq!(expected, subject);
