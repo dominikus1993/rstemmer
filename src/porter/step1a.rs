@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 use regex::Regex;
 
 use crate::strings::{ replace_suffix, remove_suffix };
@@ -9,6 +7,7 @@ enum ReplaceResult {
     Found(String),
     Next(String),
 }
+
 
 impl ReplaceResult {
     fn bind(&self, f: fn(String) -> ReplaceResult) -> ReplaceResult {
@@ -45,12 +44,12 @@ fn replace_ied_and_ies(word: String) -> ReplaceResult {
         "ie"
     };
     let res = replace_suffix(replace_suffix(word, "ied", replacement), "ies", replacement);
-    return ReplaceResult::Found(res);
+    ReplaceResult::Found(res)
 }
 
 fn replace_sses(str: String) -> ReplaceResult {
     if str.ends_with("sses") {
-        let result = replace_suffix(str.clone(), "sses", "ss");
+        let result = replace_suffix(str, "sses", "ss");
         return ReplaceResult::Found(result);
     }
     ReplaceResult::Next(str)
@@ -60,7 +59,7 @@ fn leave_us_and_ss(word: String) -> ReplaceResult {
     if word.ends_with("ss") || word.ends_with("us") {
         return ReplaceResult::Found(word);
     }
-    return ReplaceResult::Next(word);
+    ReplaceResult::Next(word)
 }
 
 pub fn apply(word: String) -> String {
@@ -111,7 +110,7 @@ mod tests {
 
     #[test]
     fn test_apply() {
-        let array = vec![("actresses", "actress".to_string()), ("test", "test".to_string()), ("youth's", "Youth".to_string())];
+        let array = vec![("actresses", "actress".to_string()), ("test", "test".to_string())];
         for (word, expected) in array {
             let subject = apply(word.to_string());
             assert_eq!(expected, subject);

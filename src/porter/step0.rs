@@ -25,11 +25,11 @@ fn mark_consonant_y(word: &str) -> String {
     let re = Regex::new(r"^y|([aeiou])y").unwrap();
 
     if word.contains('y') {
-        re.replace_all(&word, |caps: &regex::Captures| {
+        re.replace_all(word, |caps: &regex::Captures| {
             if let Some(mat) = caps.get(1) {
                 format!("{}Y", mat.as_str())
             } else {
-                "Y".to_string()
+                String::from("Y")
             }
         }).to_string()
     } else {
