@@ -1,27 +1,27 @@
 use regex::Regex;
 
-fn trim_end_apostrophe(str: String) -> String {
+fn trim_end_apostrophe(str: &str) -> &str {
     match str.strip_suffix('\'') {
-        Some(word) => word.to_string(),
+        Some(word) => word,
         None => str
     }
 }
 
-fn trim_start_apostrophe(str: String) -> String {
+fn trim_start_apostrophe(str: &str) -> &str {
     match str.strip_prefix('\'') {
-        Some(word) => word.to_string(),
+        Some(word) => word,
         None => str
     }
 }
 
-fn trim_s_apostrophe(str: String) -> String {
+fn trim_s_apostrophe(str: &str) -> &str {
     match str.strip_suffix("'s") {
-        Some(word) => word.to_string(),
+        Some(word) => word,
         None => str
     }
 }
 
-fn mark_consonant_y(word: String) -> String {
+fn mark_consonant_y(word: &str) -> String {
     let re = Regex::new(r"^y|([aeiou])y").unwrap();
 
     if word.contains('y') {
@@ -33,11 +33,11 @@ fn mark_consonant_y(word: String) -> String {
             }
         }).to_string()
     } else {
-        word
+        word.to_string()
     }
 }
 
-pub fn apply(word: String) -> String {
+pub fn apply(word: &str) -> String {
     mark_consonant_y(trim_s_apostrophe(trim_end_apostrophe(trim_start_apostrophe(word))))
 }
 
@@ -50,7 +50,7 @@ mod tests {
     fn test_trim_end_apostrophe() {
         let array = vec![("te'st", "te'st"), ("test'", "test")];
         for (word, expected) in array {
-            let subject = trim_end_apostrophe(word.to_string());
+            let subject = trim_end_apostrophe(word);
             assert_eq!(expected.to_string(), subject);
         }
     }
@@ -59,7 +59,7 @@ mod tests {
     fn test_trim_start_apostrophe() {
         let array = vec![("te'st", "te'st"), ("'test", "test")];
         for (word, expected) in array {
-            let subject = trim_start_apostrophe(word.to_string());
+            let subject = trim_start_apostrophe(word);
             assert_eq!(expected.to_string(), subject);
         }
     }
@@ -68,7 +68,7 @@ mod tests {
     fn test_mark_consonant_y() {
         let array = vec![("te'st", "te'st"), ("test's", "test")];
         for (word, expected) in array {
-            let subject = trim_s_apostrophe(word.to_string());
+            let subject = trim_s_apostrophe(word);
             assert_eq!(expected.to_string(), subject);
         }
     }
@@ -77,7 +77,7 @@ mod tests {
     fn test_trim_s_apostrophe() {
         let array = vec![("flying", "flying"), ("youth", "Youth"), ("boyish", "boYish")];
         for (word, expected) in array {
-            let subject = mark_consonant_y(word.to_string());
+            let subject = mark_consonant_y(word);
             assert_eq!(expected.to_string(), subject);
         }
     }
@@ -86,7 +86,7 @@ mod tests {
     fn test_apply() {
         let array = vec![("youth's'", "Youth")];
         for (word, expected) in array {
-            let subject = apply(word.to_string());
+            let subject = apply(word);
             assert_eq!(expected.to_string(), subject);
         }
     }
